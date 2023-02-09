@@ -6,9 +6,9 @@ public class Cantante {
 	int Puntuacion;
 	String Foto;
 
-	public Cantante (String Nombre, String Foto) {
+	public Cantante (String Nombre) {
 		this.Nombre = Nombre;
-		this.Foto = Foto;
+		this.Foto = "/img/" + Nombre + ".png";
 		Puntuacion = 0;
 	}
 

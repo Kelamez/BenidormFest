@@ -14,6 +14,8 @@ import javax.swing.border.EmptyBorder;
 
 import Controlador.Controlador;
 import javax.swing.JTextField;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class Vista extends JFrame {
 
@@ -69,6 +71,10 @@ public class Vista extends JFrame {
 		PrimerPane.add(VerProvincias);
 		
 		IniciarVotacion = new JButton("Iniciar Votaci\u00F3n");
+		IniciarVotacion.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 		IniciarVotacion.setBackground(new Color(50, 205, 50));
 		IniciarVotacion.setFont(new Font("Tw Cen MT", Font.PLAIN, 16));
 		IniciarVotacion.setBounds(506, 25, 215, 50);
