@@ -1,6 +1,7 @@
 package Modelo;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Provincia {
 	
@@ -12,8 +13,14 @@ public class Provincia {
 	int rango_26_40;
 	int rango_41_65;
 	int rango_mas_66;
+	ArrayList<Votos_Provincia> conteovotos = new ArrayList<Votos_Provincia>();
+	List<Cantante> mejorescantantes;
 	
-	public Provincia () {
+	public Provincia (List<Cantante> cantantes) {
+		for (int i = 0; i < cantantes.size(); i++) {
+			this.conteovotos.add(new Votos_Provincia(cantantes.get(i).getNombre()));
+			this.mejorescantantes = new ArrayList<Cantante>();
+		}
 	}
 
 	public String getNombre() {
@@ -78,6 +85,18 @@ public class Provincia {
 
 	public void setRango_mas_66(int rango_mas_66) {
 		this.rango_mas_66 = rango_mas_66;
+	}
+
+	public ArrayList<Votos_Provincia> getConteovotos() {
+		return conteovotos;
+	}
+
+	public List<Cantante> getMejorescantantes() {
+		return mejorescantantes;
+	}
+
+	public void setMejorescantantes(List<Cantante> mejorescantantes) {
+		this.mejorescantantes = mejorescantantes;
 	}
 
 }

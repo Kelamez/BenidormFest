@@ -3,9 +3,9 @@ package Modelo;
 public class Porcentaje_votacion_rango {
 	
 	String rango;
-	int porcentaje;
+	double porcentaje;
 	
-	public Porcentaje_votacion_rango(String rango, int porcentaje) {
+	public Porcentaje_votacion_rango(String rango, double porcentaje) {
 		this.rango = rango;
 		this.porcentaje = porcentaje;
 	}
@@ -18,7 +18,7 @@ public class Porcentaje_votacion_rango {
 		this.rango = rango;
 	}
 
-	public int getPorcentaje() {
+	public double getPorcentaje() {
 		return porcentaje;
 	}
 

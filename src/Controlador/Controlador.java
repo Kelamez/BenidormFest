@@ -18,6 +18,7 @@ import javax.swing.ImageIcon;
 import Modelo.Cantante;
 import Modelo.Porcentaje_votacion_rango;
 import Modelo.Provincia;
+import Modelo.Votos_Provincia;
 import Vista.Vista;
 
 public class Controlador implements ActionListener{
@@ -26,6 +27,7 @@ public class Controlador implements ActionListener{
 	List<Cantante> cantantes = null;
 	List<Provincia> provincias = null;
 	List<Porcentaje_votacion_rango> porcentaje_votacion_rango = null;
+	List<Cantante> mejores = new ArrayList<Cantante>();
 	Connection conexion = null;
 	DefaultListModel modelo = new DefaultListModel();
 	int numero;
@@ -41,10 +43,15 @@ public class Controlador implements ActionListener{
 		this.vista.Volver2.addActionListener(this);
 		this.vista.IniciarVotacion.addActionListener(this);
 		this.vista.VerGanadores.addActionListener(this);
+		this.vista.Confirmacion.addActionListener(this);
 		
 		try {
 			conexion = createConnection();
 			System.out.println("Conexión realizada.");
+			
+			cantantes = getCantantes(conexion);
+			
+			System.out.println(cantantes);
 			
 			provincias = getProvincias(conexion);
 			
@@ -53,10 +60,6 @@ public class Controlador implements ActionListener{
 			porcentaje_votacion_rango = getPorcentajes(conexion);
 			
 			System.out.println(porcentaje_votacion_rango);
-			
-			cantantes = getCantantes(conexion);
-			
-			System.out.println(cantantes);
 		} catch (ClassNotFoundException | SQLException | IOException e) {
 			e.printStackTrace();
 		}
@@ -106,18 +109,212 @@ public class Controlador implements ActionListener{
 		}
 		
 		if (e.getSource() == vista.IniciarVotacion) {
+			
 			this.vista.IniciarVotacion.setVisible(false);
-			this.vista.VerGanadores.setVisible(true);
+			System.out.println("va a iniciar la votación");
+			
+			for (int i = 0; i < provincias.size(); i++) {
+				HiloNuevo CrearHilo = new HiloNuevo(provincias.get(i), porcentaje_votacion_rango, cantantes);
+				
+				CrearHilo.crearVotos();
+			}
+			
+			for (int j = 0; j < cantantes.size(); j++) {
+				Cantante cantante = cantantes.get(j);
+				
+				cantante.setPuntuacion();
+				
+				System.out.println(cantante.getNombre() + " tiene un total de " + cantante.getPuntuacion() + " votos.");
+				System.out.println("Jovenes: " + cantante.getJovenes());
+				System.out.println("Adultos: " + cantante.getAdultos());
+				System.out.println("Ancianos: " + cantante.getAncianos());
+				System.out.println("Jubilados: " + cantante.getJubilados());
+			}
+
+			String fotoprimero = "";
+			int puntuacionprimero = 0;
+			String fotosegundo = "";
+			int puntuacionsegundo = 0;
+			String fototercero = "";
+			int puntuaciontercero = 0;
+			for(int i = 0; i < cantantes.size(); i++) {
+				if (puntuacionprimero < cantantes.get(i).getPuntuacion()) {
+					fototercero = fotosegundo;
+					puntuaciontercero = puntuacionsegundo;
+					fotosegundo = fotoprimero;
+					puntuacionsegundo = puntuacionprimero;
+					fotoprimero = cantantes.get(i).getFoto();
+					puntuacionprimero = cantantes.get(i).getPuntuacion();
+				} else if (puntuacionsegundo < cantantes.get(i).getPuntuacion()) {
+					fototercero = fotosegundo;
+					puntuaciontercero = puntuacionsegundo;
+					fotosegundo = cantantes.get(i).getFoto();
+					puntuacionsegundo = cantantes.get(i).getPuntuacion();
+				} else if (puntuaciontercero < cantantes.get(i).getPuntuacion()) {
+					fototercero = cantantes.get(i).getFoto();
+					puntuaciontercero = cantantes.get(i).getPuntuacion();
+				}
+			}
+			
+			System.out.println(fotoprimero);
+			System.out.println(fotosegundo);
+			System.out.println(fototercero);
+			
+			this.vista.primero.setIcon(new ImageIcon(Vista.class.getResource(fotoprimero)));
+			this.vista.segundo.setIcon(new ImageIcon(Vista.class.getResource(fotosegundo)));
+			this.vista.tercero.setIcon(new ImageIcon(Vista.class.getResource(fototercero)));
+			
 			this.vista.primero.setVisible(true);
-			this.vista.first.setVisible(true);
 			this.vista.segundo.setVisible(true);
-			this.vista.second.setVisible(true);
 			this.vista.tercero.setVisible(true);
+			this.vista.first.setVisible(true);
+			this.vista.second.setVisible(true);
 			this.vista.third.setVisible(true);
+			this.vista.textField.setVisible(true);
+			this.vista.Confirmacion.setVisible(true);
+			
+			this.vista.VerGanadores.setVisible(true);
 		}
 		
-		if (e.getSource() == vista.VerGanadores) {
+		if (e.getSource() == vista.Confirmacion) {
+			for (int i = 0; i < provincias.size(); i++) {
+				if (this.vista.textField.getText().equals(provincias.get(i).getNombre())) {
+					Provincia provincia = provincias.get(i);
+					mejores = provincia.getMejorescantantes();
+					
+					this.vista.primero.setIcon(new ImageIcon(Vista.class.getResource(mejores.get(0).getFoto())));
+					this.vista.segundo.setIcon(new ImageIcon(Vista.class.getResource(mejores.get(1).getFoto())));
+					this.vista.tercero.setIcon(new ImageIcon(Vista.class.getResource(mejores.get(2).getFoto())));
+				}
+			}
 			
+			if (this.vista.textField.getText().equals("Jovenes")) {
+				String fotoprimero = "";
+				int puntuacionprimero = 0;
+				String fotosegundo = "";
+				int puntuacionsegundo = 0;
+				String fototercero = "";
+				int puntuaciontercero = 0;
+				for(int i = 0; i < cantantes.size(); i++) {
+					if (puntuacionprimero < cantantes.get(i).getJovenes()) {
+						fototercero = fotosegundo;
+						puntuaciontercero = puntuacionsegundo;
+						fotosegundo = fotoprimero;
+						puntuacionsegundo = puntuacionprimero;
+						fotoprimero = cantantes.get(i).getFoto();
+						puntuacionprimero = cantantes.get(i).getJovenes();
+					} else if (puntuacionsegundo < cantantes.get(i).getJovenes()) {
+						fototercero = fotosegundo;
+						puntuaciontercero = puntuacionsegundo;
+						fotosegundo = cantantes.get(i).getFoto();
+						puntuacionsegundo = cantantes.get(i).getJovenes();
+					} else if (puntuaciontercero < cantantes.get(i).getJovenes()) {
+						fototercero = cantantes.get(i).getFoto();
+						puntuaciontercero = cantantes.get(i).getJovenes();
+					}
+				}
+				
+				this.vista.primero.setIcon(new ImageIcon(Vista.class.getResource(fotoprimero)));
+				this.vista.segundo.setIcon(new ImageIcon(Vista.class.getResource(fotosegundo)));
+				this.vista.tercero.setIcon(new ImageIcon(Vista.class.getResource(fototercero)));
+				
+			}
+			
+			if (this.vista.textField.getText().equals("Adultos")) {
+				String fotoprimero = "";
+				int puntuacionprimero = 0;
+				String fotosegundo = "";
+				int puntuacionsegundo = 0;
+				String fototercero = "";
+				int puntuaciontercero = 0;
+				for(int i = 0; i < cantantes.size(); i++) {
+					if (puntuacionprimero < cantantes.get(i).getAdultos()) {
+						fototercero = fotosegundo;
+						puntuaciontercero = puntuacionsegundo;
+						fotosegundo = fotoprimero;
+						puntuacionsegundo = puntuacionprimero;
+						fotoprimero = cantantes.get(i).getFoto();
+						puntuacionprimero = cantantes.get(i).getAdultos();
+					} else if (puntuacionsegundo < cantantes.get(i).getAdultos()) {
+						fototercero = fotosegundo;
+						puntuaciontercero = puntuacionsegundo;
+						fotosegundo = cantantes.get(i).getFoto();
+						puntuacionsegundo = cantantes.get(i).getAdultos();
+					} else if (puntuaciontercero < cantantes.get(i).getAdultos()) {
+						fototercero = cantantes.get(i).getFoto();
+						puntuaciontercero = cantantes.get(i).getAdultos();
+					}
+				}
+				
+				this.vista.primero.setIcon(new ImageIcon(Vista.class.getResource(fotoprimero)));
+				this.vista.segundo.setIcon(new ImageIcon(Vista.class.getResource(fotosegundo)));
+				this.vista.tercero.setIcon(new ImageIcon(Vista.class.getResource(fototercero)));
+				
+			}
+			
+			if (this.vista.textField.getText().equals("Ancianos")) {
+				String fotoprimero = "";
+				int puntuacionprimero = 0;
+				String fotosegundo = "";
+				int puntuacionsegundo = 0;
+				String fototercero = "";
+				int puntuaciontercero = 0;
+				for(int i = 0; i < cantantes.size(); i++) {
+					if (puntuacionprimero < cantantes.get(i).getAncianos()) {
+						fototercero = fotosegundo;
+						puntuaciontercero = puntuacionsegundo;
+						fotosegundo = fotoprimero;
+						puntuacionsegundo = puntuacionprimero;
+						fotoprimero = cantantes.get(i).getFoto();
+						puntuacionprimero = cantantes.get(i).getAncianos();
+					} else if (puntuacionsegundo < cantantes.get(i).getAncianos()) {
+						fototercero = fotosegundo;
+						puntuaciontercero = puntuacionsegundo;
+						fotosegundo = cantantes.get(i).getFoto();
+						puntuacionsegundo = cantantes.get(i).getAncianos();
+					} else if (puntuaciontercero < cantantes.get(i).getAncianos()) {
+						fototercero = cantantes.get(i).getFoto();
+						puntuaciontercero = cantantes.get(i).getAncianos();
+					}
+				}
+				
+				this.vista.primero.setIcon(new ImageIcon(Vista.class.getResource(fotoprimero)));
+				this.vista.segundo.setIcon(new ImageIcon(Vista.class.getResource(fotosegundo)));
+				this.vista.tercero.setIcon(new ImageIcon(Vista.class.getResource(fototercero)));
+				
+			}
+			
+			if (this.vista.textField.getText().equals("Jubilados")) {
+				String fotoprimero = "";
+				int puntuacionprimero = 0;
+				String fotosegundo = "";
+				int puntuacionsegundo = 0;
+				String fototercero = "";
+				int puntuaciontercero = 0;
+				for(int i = 0; i < cantantes.size(); i++) {
+					if (puntuacionprimero < cantantes.get(i).getJubilados()) {
+						fototercero = fotosegundo;
+						puntuaciontercero = puntuacionsegundo;
+						fotosegundo = fotoprimero;
+						puntuacionsegundo = puntuacionprimero;
+						fotoprimero = cantantes.get(i).getFoto();
+						puntuacionprimero = cantantes.get(i).getJubilados();
+					} else if (puntuacionsegundo < cantantes.get(i).getJubilados()) {
+						fototercero = fotosegundo;
+						puntuaciontercero = puntuacionsegundo;
+						fotosegundo = cantantes.get(i).getFoto();
+						puntuacionsegundo = cantantes.get(i).getJubilados();
+					} else if (puntuaciontercero < cantantes.get(i).getJubilados()) {
+						fototercero = cantantes.get(i).getFoto();
+						puntuaciontercero = cantantes.get(i).getJubilados();
+					}
+				}
+				
+				this.vista.primero.setIcon(new ImageIcon(Vista.class.getResource(fotoprimero)));
+				this.vista.segundo.setIcon(new ImageIcon(Vista.class.getResource(fotosegundo)));
+				this.vista.tercero.setIcon(new ImageIcon(Vista.class.getResource(fototercero)));
+				
+			}
 		}
 		
 	}
@@ -211,7 +408,7 @@ public class Controlador implements ActionListener{
 			Porcentaje_votacion_rango porcentaje_votacion_rango;
 			
 			while (resultSet.next()) {
-				porcentaje_votacion_rango = new Porcentaje_votacion_rango(resultSet.getString("RANGO"), resultSet.getInt("PORCENTAJE"));
+				porcentaje_votacion_rango = new Porcentaje_votacion_rango(resultSet.getString("RANGO"), resultSet.getDouble("PORCENTAJE"));
 				
 				porcentaje_votacion_rango_lista.add(porcentaje_votacion_rango);
 			}
@@ -254,7 +451,7 @@ public class Controlador implements ActionListener{
 				
 				Provincia provincia;
 				while (resultSet.next()) {
-					provincia = new Provincia();
+					provincia = new Provincia(cantantes);
 					provincia.setNombre(resultSet.getString("NOMBRE_COMUNIDAD"));
 					provincia.setHabitantes(resultSet.getInt("TOTAL_HABITANTES"));
 					provincia.setRango_1_9(resultSet.getInt("RANGO_1_9"));

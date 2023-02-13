@@ -19,11 +19,10 @@ import java.awt.event.ActionEvent;
 
 public class Vista extends JFrame {
 
-	public JPanel PrincipalPane, CantantesPane, PrimerPane, ProvinciasPane, GanadoresPane;
-	public JButton VerProvincias, VerCantantes, IniciarVotacion, VerGanadores, Siguiente, Anterior, Volver1, Volver2, Comunidad, Volver3, Edad, Confirmar, De18a25, De26a40, De41a65, Mas65;
-	public JLabel fondo, first, second, third, primero, segundo, tercero, Foto1, Foto2, Foto3, Foto4, Foto5, fondoCantante, fondoProvincias, tabla;
-	public JTextField txtComunidad;
-
+	public JPanel PrincipalPane, CantantesPane, PrimerPane, ProvinciasPane;
+	public JButton VerProvincias, VerCantantes, IniciarVotacion, VerGanadores, Siguiente, Anterior, Volver1, Volver2, Confirmacion;
+	public JLabel fondo, first, second, third, primero, segundo, tercero, Foto1, Foto2, Foto3, Foto4, Foto5, fondoCantante, fondoProvincias, tabla, fondoGanadores;
+	public JTextField textField;
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -60,32 +59,43 @@ public class Vista extends JFrame {
 		VerCantantes.setForeground(new Color(251, 2, 2));
 		VerCantantes.setFont(new Font("Tw Cen MT", Font.PLAIN, 16));
 		VerCantantes.setBackground(new Color(0, 0, 85));
-		VerCantantes.setBounds(266, 25, 215, 50);
+		VerCantantes.setBounds(266, 11, 215, 50);
 		PrimerPane.add(VerCantantes);
 		
 		VerProvincias = new JButton("Ver Provincias");
 		VerProvincias.setForeground(new Color(251, 2, 2));
 		VerProvincias.setBackground(new Color(0, 0, 85));
 		VerProvincias.setFont(new Font("Tw Cen MT", Font.PLAIN, 16));
-		VerProvincias.setBounds(26, 25, 215, 50);
+		VerProvincias.setBounds(24, 11, 215, 50);
 		PrimerPane.add(VerProvincias);
 		
 		IniciarVotacion = new JButton("Iniciar Votaci\u00F3n");
-		IniciarVotacion.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
 		IniciarVotacion.setBackground(new Color(50, 205, 50));
 		IniciarVotacion.setFont(new Font("Tw Cen MT", Font.PLAIN, 16));
-		IniciarVotacion.setBounds(506, 25, 215, 50);
+		IniciarVotacion.setBounds(506, 11, 215, 50);
 		PrimerPane.add(IniciarVotacion);
 		
-		VerGanadores = new JButton("Ver Ganadores");
+		VerGanadores = new JButton("Felicidades");
+		VerGanadores.setEnabled(false);
 		VerGanadores.setBackground(new Color(236, 189, 0));
 		VerGanadores.setFont(new Font("Tw Cen MT", Font.PLAIN, 16));
 		VerGanadores.setBounds(266, 487, 215, 50);
 		PrimerPane.add(VerGanadores);
 		VerGanadores.setVisible(false);
+		
+		Confirmacion = new JButton("Confirmar");
+		Confirmacion.setForeground(new Color(32, 178, 170));
+		Confirmacion.setFont(new Font("Tw Cen MT", Font.PLAIN, 16));
+		Confirmacion.setBackground(new Color(0, 0, 139));
+		Confirmacion.setBounds(619, 63, 101, 37);
+		PrimerPane.add(Confirmacion);
+		Confirmacion.setVisible(false);
+		
+		textField = new JTextField();
+		textField.setColumns(10);
+		textField.setBounds(10, 63, 612, 37);
+		PrimerPane.add(textField);
+		textField.setVisible(false);
 		
 		first = new JLabel("");
 		first.setHorizontalAlignment(SwingConstants.CENTER);
@@ -219,51 +229,10 @@ public class Vista extends JFrame {
 		ProvinciasPane.add(fondoProvincias);
 		fondoProvincias.setIcon(new ImageIcon(Vista.class.getResource("/img/fondoProvincias.png")));
 		
-		//VER GANADORES -------------------------------//
-		
-		GanadoresPane = new JPanel();
-		GanadoresPane.setBounds(0, 0, 747, 539);
-		PrincipalPane.add(GanadoresPane);
-		GanadoresPane.setLayout(null);
-		GanadoresPane.setVisible(false);
-		
-		Comunidad = new JButton("Comunidad");
-		Comunidad.setBounds(26, 25, 215, 50);
-		GanadoresPane.add(Comunidad);
-		
-		Volver3 = new JButton("Volver");
-		Volver3.setBounds(266, 25, 215, 50);
-		GanadoresPane.add(Volver3);
-		
-		Edad = new JButton("Edad");
-		Edad.setBounds(506, 25, 215, 50);
-		GanadoresPane.add(Edad);
-		
-		txtComunidad = new JTextField();
-		txtComunidad.setHorizontalAlignment(SwingConstants.LEFT);
-		txtComunidad.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		txtComunidad.setBounds(10, 86, 612, 37);
-		GanadoresPane.add(txtComunidad);
-		txtComunidad.setColumns(10);
-		
-		Confirmar = new JButton("Confirmar");
-		Confirmar.setBounds(632, 95, 105, 23);
-		GanadoresPane.add(Confirmar);
-		
-		De18a25 = new JButton("18-25");
-		De18a25.setBounds(22, 86, 160, 50);
-		GanadoresPane.add(De18a25);
-		
-		De26a40 = new JButton("26-40");
-		De26a40.setBounds(203, 86, 160, 50);
-		GanadoresPane.add(De26a40);
-		
-		De41a65 = new JButton("41-65");
-		De41a65.setBounds(384, 86, 160, 50);
-		GanadoresPane.add(De41a65);
-		
-		Mas65 = new JButton("<65");
-		Mas65.setBounds(565, 86, 160, 50);
-		GanadoresPane.add(Mas65);
+		fondoGanadores = new JLabel("");
+		fondoGanadores.setHorizontalAlignment(SwingConstants.LEFT);
+		fondoGanadores.setBounds(0, 0, 747, 539);
+		ProvinciasPane.add(fondoGanadores);
+		fondoGanadores.setIcon(new ImageIcon(Vista.class.getResource("/img/fondoProvincias.png")));
 	}
 }
